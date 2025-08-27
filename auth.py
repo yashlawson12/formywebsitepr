@@ -262,7 +262,7 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
             bank = gets(response.text, '"issuingBank":"', '"')
             country = gets(response.text, '"countryOfIssuance":"', '"')
         except Exception:
-            return response.text, '', '', ''
+            return response.text, '', '', '', ''
 
         error_message = None
         if 'error' in response.text:
@@ -309,7 +309,7 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
         return response.text, country, brand, bank, prepaid
 
     except Exception as e:
-        return f"EXCEPTION: {str(e)}", '', '', ''
+        return f"EXCEPTION: {str(e)}", '', '', '', ''
 
 
 async def charge_resp(result):
