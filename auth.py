@@ -115,8 +115,8 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
         data = {
             'ihcaction': 'login',
             'ihc_login_nonce': login,
-            'log': 'Lena Molina',
-            'pwd': 'LenaMon12',
+            'log': 'EdithRivera',
+            'pwd': 'Edithrivera1908',
         }
 
         response = await session.post('https://boltlaundry.com/loginnow/', headers=headers, data=data)
