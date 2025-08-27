@@ -423,11 +423,15 @@ async def multi_checking(fullz: str) -> str:
         except Exception:
             error_message = ""
 
+    if "Reason: " in error_message:
+        before, sep, after = error_message.partition("Reason: ")
+        error_message = after.strip()
+
     if "Payment method successfully added." in error_message:
         response = "Approved ✅"
         error_message = ""
     else:
-        response = "Expiration date invalid ❌"
+        response = error_message or "Expiration date invalid ❌"
 
     if error_message:
         output = (
